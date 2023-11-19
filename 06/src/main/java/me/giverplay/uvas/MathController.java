@@ -81,6 +81,18 @@ public class MathController {
     return Math.sqrt(parseDouble(number));
   }
 
+  @RequestMapping(value = "/mean/{numberOne}/{numberTwo}", method = RequestMethod.GET)
+  public Double mean(@PathVariable(value = "numberOne") String numberOne,
+                    @PathVariable(value = "numberTwo") String numberTwo)
+    throws UnsupportedMathOperationException {
+
+    if (isNaN(numberOne) || isNaN(numberTwo)) {
+      throw new UnsupportedMathOperationException("The mean values must be numbers");
+    }
+
+    return (parseDouble(numberOne) + parseDouble(numberTwo)) / 2.0D;
+  }
+
   private double parseDouble(String value) {
     if (value == null) return 0.0D;
 
