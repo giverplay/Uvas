@@ -1,5 +1,6 @@
 package me.giverplay.uvas;
 
+import me.giverplay.uvas.exception.exceptions.UnsupportedMathOperationException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,7 +18,7 @@ public class MathController {
     throws Exception {
 
     if (isNaN(numberOne) || isNaN(numberTwo)) {
-      throw new Exception();
+      throw new UnsupportedMathOperationException("The sum terms must be numbers");
     }
 
     return parseDouble(numberOne) + parseDouble(numberTwo);
