@@ -48,6 +48,24 @@ public class MathController {
     return parseDouble(numberOne) * parseDouble(numberTwo);
   }
 
+  @RequestMapping(value = "/division/{numberOne}/{numberTwo}", method = RequestMethod.GET)
+  public Double division(@PathVariable(value = "numberOne") String numberOne,
+                               @PathVariable(value = "numberTwo") String numberTwo)
+    throws UnsupportedMathOperationException {
+
+    if (isNaN(numberOne) || isNaN(numberTwo)) {
+      throw new UnsupportedMathOperationException("The multiplication dividend and divisor must be numbers");
+    }
+
+    double divisor = parseDouble(numberTwo);
+
+    if(divisor == 0) {
+      throw new UnsupportedMathOperationException("The divisor cannot be zero");
+    }
+
+    return parseDouble(numberOne) / divisor;
+  }
+
   private double parseDouble(String value) {
     if (value == null) return 0.0D;
 
