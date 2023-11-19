@@ -36,6 +36,18 @@ public class MathController {
     return parseDouble(numberOne) - parseDouble(numberTwo);
   }
 
+  @RequestMapping(value = "/multiplication/{numberOne}/{numberTwo}", method = RequestMethod.GET)
+  public Double multiplication(@PathVariable(value = "numberOne") String numberOne,
+                               @PathVariable(value = "numberTwo") String numberTwo)
+    throws UnsupportedMathOperationException {
+
+    if (isNaN(numberOne) || isNaN(numberTwo)) {
+      throw new UnsupportedMathOperationException("The multiplication factors must be numbers");
+    }
+
+    return parseDouble(numberOne) * parseDouble(numberTwo);
+  }
+
   private double parseDouble(String value) {
     if (value == null) return 0.0D;
 
