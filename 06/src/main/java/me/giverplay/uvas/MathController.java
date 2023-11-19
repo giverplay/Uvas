@@ -66,6 +66,21 @@ public class MathController {
     return parseDouble(numberOne) / divisor;
   }
 
+  @RequestMapping(value = "/sqrt/{number}", method = RequestMethod.GET)
+  public double sqrt(@PathVariable(value = "number") String number) throws UnsupportedMathOperationException {
+    if(isNaN(number)) {
+      throw new UnsupportedMathOperationException("The number cannot bem null");
+    }
+
+    double value = parseDouble(number);
+
+    if(value < 0) {
+      throw new UnsupportedMathOperationException("Cannot extract square root from negative numbers");
+    }
+
+    return Math.sqrt(parseDouble(number));
+  }
+
   private double parseDouble(String value) {
     if (value == null) return 0.0D;
 
