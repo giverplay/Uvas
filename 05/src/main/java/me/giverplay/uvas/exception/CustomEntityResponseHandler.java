@@ -1,6 +1,5 @@
 package me.giverplay.uvas.exception;
 
-import me.giverplay.uvas.exception.exceptions.UnsupportedMathOperationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -13,7 +12,7 @@ import java.util.Date;
 
 @ControllerAdvice
 @RestController
-public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+public class CustomEntityResponseHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public final ResponseEntity<ExceptionResponse> handleExceptions(Exception exception, WebRequest request) {
