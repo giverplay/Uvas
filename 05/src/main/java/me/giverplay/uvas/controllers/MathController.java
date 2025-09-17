@@ -1,12 +1,15 @@
 package me.giverplay.uvas.controllers;
 
 import me.giverplay.uvas.exception.UnsupportedMathOperationException;
+import me.giverplay.uvas.utils.MathUtils;
+import me.giverplay.uvas.utils.MathValidate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController()
+@RequestMapping("/math")
 public class MathController {
 
   @RequestMapping(value = "/sum/{numberOne}/{numberTwo}", method = RequestMethod.GET)
@@ -14,11 +17,8 @@ public class MathController {
                     @PathVariable(value = "numberTwo") String numberTwo)
     throws UnsupportedMathOperationException {
 
-    if (isNaN(numberOne) || isNaN(numberTwo)) {
-      throw new UnsupportedMathOperationException("The sum terms must be numbers");
-    }
-
-    return parseDouble(numberOne) + parseDouble(numberTwo);
+    MathValidate.areNumbers(numberOne, numberTwo, "The sum terms must be numbers");
+    return MathUtils.parseDouble(numberOne) + MathUtils.parseDouble(numberTwo);
   }
 
   @RequestMapping(value = "/subtraction/{numberOne}/{numberTwo}", method = RequestMethod.GET)
@@ -26,11 +26,8 @@ public class MathController {
                             @PathVariable(value = "numberTwo") String numberTwo)
     throws UnsupportedMathOperationException {
 
-    if (isNaN(numberOne) || isNaN(numberTwo)) {
-      throw new UnsupportedMathOperationException("The subtraction terms must be numbers");
-    }
-
-    return parseDouble(numberOne) - parseDouble(numberTwo);
+    MathValidate.areNumbers(numberOne, numberTwo, "The subtraction terms must be numbers");
+    return MathUtils.parseDouble(numberOne) - MathUtils.parseDouble(numberTwo);
   }
 
   @RequestMapping(value = "/multiplication/{numberOne}/{numberTwo}", method = RequestMethod.GET)
@@ -38,69 +35,37 @@ public class MathController {
                                @PathVariable(value = "numberTwo") String numberTwo)
     throws UnsupportedMathOperationException {
 
-    if (isNaN(numberOne) || isNaN(numberTwo)) {
-      throw new UnsupportedMathOperationException("The multiplication factors must be numbers");
-    }
-
-    return parseDouble(numberOne) * parseDouble(numberTwo);
+    MathValidate.areNumbers(numberOne, numberTwo, "The multiplication terms must be numbers");
+    return MathUtils.parseDouble(numberOne) * MathUtils.parseDouble(numberTwo);
   }
 
   @RequestMapping(value = "/division/{numberOne}/{numberTwo}", method = RequestMethod.GET)
   public Double division(@PathVariable(value = "numberOne") String numberOne,
-                               @PathVariable(value = "numberTwo") String numberTwo)
+                         @PathVariable(value = "numberTwo") String numberTwo)
     throws UnsupportedMathOperationException {
 
-    if (isNaN(numberOne) || isNaN(numberTwo)) {
-      throw new UnsupportedMathOperationException("The multiplication dividend and divisor must be numbers");
-    }
+    MathValidate.areNumbers(numberOne, numberTwo, "The division terms must be numbers");
+    double divisor = MathUtils.parseDouble(numberTwo);
 
-    double divisor = parseDouble(numberTwo);
-
-    if(divisor == 0) {
-      throw new UnsupportedMathOperationException("The divisor cannot be zero");
-    }
-
-    return parseDouble(numberOne) / divisor;
+    MathValidate.notZero(divisor, "The divisor cannot be zero");
+    return MathUtils.parseDouble(numberOne) / divisor;
   }
 
   @RequestMapping(value = "/sqrt/{number}", method = RequestMethod.GET)
   public double sqrt(@PathVariable(value = "number") String number) throws UnsupportedMathOperationException {
-    if(isNaN(number)) {
-      throw new UnsupportedMathOperationException("The number cannot bem null");
-    }
+    MathValidate.isNumber(number, "The number cannot bem null");
+    double value = MathUtils.parseDouble(number);
 
-    double value = parseDouble(number);
-
-    if(value < 0) {
-      throw new UnsupportedMathOperationException("Cannot extract square root from negative numbers");
-    }
-
-    return Math.sqrt(parseDouble(number));
+    MathValidate.isPositive(value, "Cannot extract square root from negative numbers");
+    return Math.sqrt(MathUtils.parseDouble(number));
   }
 
   @RequestMapping(value = "/mean/{numberOne}/{numberTwo}", method = RequestMethod.GET)
   public Double mean(@PathVariable(value = "numberOne") String numberOne,
-                    @PathVariable(value = "numberTwo") String numberTwo)
+                     @PathVariable(value = "numberTwo") String numberTwo)
     throws UnsupportedMathOperationException {
 
-    if (isNaN(numberOne) || isNaN(numberTwo)) {
-      throw new UnsupportedMathOperationException("The mean values must be numbers");
-    }
-
-    return (parseDouble(numberOne) + parseDouble(numberTwo)) / 2.0D;
-  }
-
-  private double parseDouble(String value) {
-    if (value == null) return 0.0D;
-
-    value = value.replaceAll(",", ".");
-    return Double.parseDouble(value);
-  }
-
-  private boolean isNaN(String value) {
-    if (value == null) return true;
-
-    value = value.replaceAll(",", ".");
-    return !value.matches("[-+]?[0-9]*\\.?[0-9]+");
+    MathValidate.areNumbers(numberOne, numberTwo, "The mean terms must be numbers");
+    return (MathUtils.parseDouble(numberOne) + MathUtils.parseDouble(numberTwo)) / 2.0D;
   }
 }
