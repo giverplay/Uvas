@@ -1,7 +1,8 @@
 package me.giverplay.uvas.utils;
 
 public final class MathUtils {
-  private MathUtils() { }
+  private MathUtils() {
+  }
 
   public static double parseDouble(String value) {
     if (value == null) return 0.0D;
