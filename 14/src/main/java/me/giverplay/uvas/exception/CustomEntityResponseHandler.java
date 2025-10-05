@@ -1,5 +1,7 @@
 package me.giverplay.uvas.exception;
 
+import me.giverplay.uvas.exception.exceptions.RequiredObjectIsNullException;
+import me.giverplay.uvas.exception.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,5 +26,11 @@ public class CustomEntityResponseHandler extends ResponseEntityExceptionHandler 
   public final ResponseEntity<ExceptionResponse> handleNotFoundException(Exception exception, WebRequest request) {
     ExceptionResponse response = new ExceptionResponse(new Date(), exception.getMessage(), request.getDescription(false));
     return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(RequiredObjectIsNullException.class)
+  public final ResponseEntity<ExceptionResponse> handleNullRequiredObjectException(Exception exception, WebRequest request) {
+    ExceptionResponse response = new ExceptionResponse(new Date(), exception.getMessage(), request.getDescription(false));
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 }

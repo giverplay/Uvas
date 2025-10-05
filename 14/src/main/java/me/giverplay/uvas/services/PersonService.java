@@ -1,7 +1,8 @@
 package me.giverplay.uvas.services;
 
 import me.giverplay.uvas.data.dto.PersonDTO;
-import me.giverplay.uvas.exception.ResourceNotFoundException;
+import me.giverplay.uvas.exception.exceptions.RequiredObjectIsNullException;
+import me.giverplay.uvas.exception.exceptions.ResourceNotFoundException;
 import me.giverplay.uvas.hateoas.PersonHATEOAS;
 import me.giverplay.uvas.mapper.ObjectMapper;
 import me.giverplay.uvas.model.PersonEntity;
@@ -39,6 +40,10 @@ public class PersonService {
   }
 
   public PersonDTO create(PersonDTO person) {
+    if(person == null) {
+      throw new RequiredObjectIsNullException();
+    }
+
     LOGGER.info("Creating one person");
     PersonEntity entity = repository.save(ObjectMapper.parseObject(person, PersonEntity.class));
     PersonDTO dto = ObjectMapper.parseObject(repository.save(entity), PersonDTO.class);
@@ -47,6 +52,10 @@ public class PersonService {
   }
 
   public PersonDTO update(PersonDTO person) {
+    if(person == null) {
+      throw new RequiredObjectIsNullException();
+    }
+
     LOGGER.info("Updating person #" + person.getId());
 
     PersonEntity entity = findById0(person.getId());
