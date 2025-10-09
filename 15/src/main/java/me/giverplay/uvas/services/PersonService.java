@@ -40,19 +40,19 @@ public class PersonService {
   }
 
   public PersonDTO create(PersonDTO person) {
-    if(person == null) {
+    if (person == null) {
       throw new RequiredObjectIsNullException();
     }
 
     LOGGER.info("Creating one person");
-    PersonEntity entity = repository.save(ObjectMapper.parseObject(person, PersonEntity.class));
+    PersonEntity entity = ObjectMapper.parseObject(person, PersonEntity.class);
     PersonDTO dto = ObjectMapper.parseObject(repository.save(entity), PersonDTO.class);
     PersonHATEOAS.addLinks(dto);
     return dto;
   }
 
   public PersonDTO update(PersonDTO person) {
-    if(person == null) {
+    if (person == null) {
       throw new RequiredObjectIsNullException();
     }
 

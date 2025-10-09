@@ -1,4 +1,4 @@
-package me.giverplay.uvas.mapper;
+package me.giverplay.uvas.mock;
 
 import me.giverplay.uvas.data.dto.PersonDTO;
 import me.giverplay.uvas.model.PersonEntity;

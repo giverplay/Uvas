@@ -12,7 +12,7 @@ public class DocsConfig {
   public OpenAPI customOpenAPI() {
     return new OpenAPI()
       .info(new Info()
-        .title("People API")
+        .title("People and Books API")
         .version("v1")
         .description("API DESCANSAnte do Carregar Molas")
         .termsOfService("https://giverplay.me")

@@ -1,6 +1,7 @@
 package me.giverplay.uvas.mapper;
 
 import me.giverplay.uvas.data.dto.PersonDTO;
+import me.giverplay.uvas.mock.MockPerson;
 import me.giverplay.uvas.model.PersonEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ObjectMapperTests {
+public class PeopleMapperTests {
   private MockPerson inputObject;
 
   @BeforeEach
