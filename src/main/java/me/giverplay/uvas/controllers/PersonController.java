@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,6 +58,12 @@ public class PersonController implements PersonControllerDocs {
   @Override
   public PersonDTO update(@RequestBody PersonDTO person) {
     return service.update(person);
+  }
+
+  @PatchMapping(value = "/{id}")
+  @Override
+  public PersonDTO disable(@PathVariable("id") Long id) {
+    return service.disable(id);
   }
 
 // @CrossOrigin(origins = "http://localhost:8080")

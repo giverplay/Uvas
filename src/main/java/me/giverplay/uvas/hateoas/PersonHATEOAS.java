@@ -15,6 +15,7 @@ public final class PersonHATEOAS {
     dto.add(linkTo(methodOn(PersonController.class).findAll()).withRel("findAll").withType("GET"));
     dto.add(linkTo(methodOn(PersonController.class).create(dto)).withRel("create").withType("CREATE"));
     dto.add(linkTo(methodOn(PersonController.class).update(dto)).withRel("update").withType("PUT"));
+    dto.add(linkTo(methodOn(PersonController.class).disable(dto.getId())).withRel("disable").withType("PATCH"));
     dto.add(linkTo(methodOn(PersonController.class).delete(dto.getId())).withRel("delete").withType("DELETE"));
   }
 }

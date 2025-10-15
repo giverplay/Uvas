@@ -1,4 +1,4 @@
-package me.giverplay.uvas.tests.integration.controllers;
+package me.giverplay.uvas.tests.integration.controllers.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class PersonControllerWithJsonTest extends AbstractIntegrationTest {
+class PersonControllerCorsTest extends AbstractIntegrationTest {
 
   private static RequestSpecification specification;
   private static ObjectMapper objectMapper;
@@ -57,6 +57,7 @@ class PersonControllerWithJsonTest extends AbstractIntegrationTest {
       .body(person)
       .when().post()
       .then().statusCode(201)
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
       .extract().body().asString();
 
     person = objectMapper.readValue(content, PersonDTO.class);
@@ -100,6 +101,7 @@ class PersonControllerWithJsonTest extends AbstractIntegrationTest {
       .pathParam("id", person.getId())
       .when().get("{id}")
       .then().statusCode(200)
+      .contentType(MediaType.APPLICATION_JSON_VALUE)
       .extract().body().asString();
 
     PersonDTO foundPerson = objectMapper.readValue(content, PersonDTO.class);
@@ -140,6 +142,7 @@ class PersonControllerWithJsonTest extends AbstractIntegrationTest {
     assertEquals(person.getLastName(), "Croft");
     assertEquals(person.getAddress(), "Somewhere - UK");
     assertEquals(person.getGender(), "Female");
+    assertTrue(person.isEnabled());
   }
 
   private void mockPerson() {
@@ -147,5 +150,6 @@ class PersonControllerWithJsonTest extends AbstractIntegrationTest {
     person.setLastName("Croft");
     person.setAddress("Somewhere - UK");
     person.setGender("Female");
+    person.setEnabled(true);
   }
 }

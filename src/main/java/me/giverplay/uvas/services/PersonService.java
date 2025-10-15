@@ -1,5 +1,6 @@
 package me.giverplay.uvas.services;
 
+import jakarta.transaction.Transactional;
 import me.giverplay.uvas.data.dto.PersonDTO;
 import me.giverplay.uvas.exception.exceptions.RequiredObjectIsNullException;
 import me.giverplay.uvas.exception.exceptions.ResourceNotFoundException;
@@ -65,6 +66,18 @@ public class PersonService {
     entity.setGender(person.getGender());
 
     PersonDTO dto = ObjectMapper.parseObject(repository.save(entity), PersonDTO.class);
+    PersonHATEOAS.addLinks(dto);
+    return dto;
+  }
+
+  @Transactional
+  public PersonDTO disable(long id) {
+    LOGGER.info("Disabling person #" + id);
+
+    findById0(id);
+    repository.disablePerson(id);
+
+    PersonDTO dto = ObjectMapper.parseObject(findById0(id), PersonDTO.class);
     PersonHATEOAS.addLinks(dto);
     return dto;
   }
