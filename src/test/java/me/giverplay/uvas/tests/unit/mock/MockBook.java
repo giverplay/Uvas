@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public class MockBook {
-  public static final long BOOKS_TIMESTAMP = 1735700400L;
+  public static final long BOOKS_TIMESTAMP = 1735700400000L;
 
   public BookEntity mockEntity() {
     return mockEntity(0);

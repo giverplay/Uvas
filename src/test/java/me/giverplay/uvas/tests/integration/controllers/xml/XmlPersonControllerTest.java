@@ -1,9 +1,8 @@
-package me.giverplay.uvas.tests.integration.controllers.json;
+package me.giverplay.uvas.tests.integration.controllers.xml;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -12,6 +11,7 @@ import io.restassured.specification.RequestSpecification;
 import me.giverplay.uvas.tests.config.TestConfig;
 import me.giverplay.uvas.tests.integration.AbstractIntegrationTest;
 import me.giverplay.uvas.tests.integration.dto.PersonDTO;
+import me.giverplay.uvas.tests.integration.dto.xml.PersonPagedModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -30,16 +30,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class PersonControllerTest extends AbstractIntegrationTest {
+class XmlPersonControllerTest extends AbstractIntegrationTest {
 
   private static RequestSpecification specification;
-  private static ObjectMapper objectMapper;
+  private static XmlMapper xmlMapper;
   private static PersonDTO person;
 
   @BeforeAll
   static void setUp() {
-    objectMapper = new ObjectMapper();
-    objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    xmlMapper = new XmlMapper();
+    xmlMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
     person = new PersonDTO();
   }
@@ -54,18 +54,18 @@ class PersonControllerTest extends AbstractIntegrationTest {
       .setPort(TestConfig.SERVER_PORT)
       .addFilter(new RequestLoggingFilter(LogDetail.ALL))
       .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-      .setContentType(MediaType.APPLICATION_JSON_VALUE)
+      .setContentType(MediaType.APPLICATION_XML_VALUE)
       .build();
 
     String content = given(specification)
-      .accept(MediaType.APPLICATION_JSON_VALUE)
+      .accept(MediaType.APPLICATION_XML_VALUE)
       .body(person)
       .when().post()
       .then().statusCode(201)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .contentType(MediaType.APPLICATION_XML_VALUE)
       .extract().body().asString();
 
-    person = objectMapper.readValue(content, PersonDTO.class);
+    person = xmlMapper.readValue(content, PersonDTO.class);
 
     assertNotNull(person);
     assertTrue(person.getId() > 0);
@@ -83,14 +83,14 @@ class PersonControllerTest extends AbstractIntegrationTest {
     person.setAddress("Calistoga, California - USA");
 
     String content = given(specification)
-      .accept(MediaType.APPLICATION_JSON_VALUE)
+      .accept(MediaType.APPLICATION_XML_VALUE)
       .body(person)
       .when().put()
       .then().statusCode(200)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .contentType(MediaType.APPLICATION_XML_VALUE)
       .extract().body().asString();
 
-    person = objectMapper.readValue(content, PersonDTO.class);
+    person = xmlMapper.readValue(content, PersonDTO.class);
 
     assertNotNull(person);
     assertTrue(person.getId() > 0);
@@ -106,14 +106,14 @@ class PersonControllerTest extends AbstractIntegrationTest {
   @Order(3)
   void findById() throws JsonProcessingException {
     String content = given(specification)
-      .accept(MediaType.APPLICATION_JSON_VALUE)
+      .accept(MediaType.APPLICATION_XML_VALUE)
       .pathParam("id", person.getId())
       .when().get("{id}")
       .then().statusCode(200)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .contentType(MediaType.APPLICATION_XML_VALUE)
       .extract().body().asString();
 
-    PersonDTO foundPerson = objectMapper.readValue(content, PersonDTO.class);
+    PersonDTO foundPerson = xmlMapper.readValue(content, PersonDTO.class);
     assertNotNull(foundPerson);
     assertTrue(foundPerson.getId() > 0);
 
@@ -128,14 +128,14 @@ class PersonControllerTest extends AbstractIntegrationTest {
   @Order(4)
   void disable() throws JsonProcessingException {
     String content = given(specification)
-      .accept(MediaType.APPLICATION_JSON_VALUE)
+      .accept(MediaType.APPLICATION_XML_VALUE)
       .pathParam("id", person.getId())
       .when().patch("{id}")
       .then().statusCode(200)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .contentType(MediaType.APPLICATION_XML_VALUE)
       .extract().body().asString();
 
-    PersonDTO foundPerson = objectMapper.readValue(content, PersonDTO.class);
+    PersonDTO foundPerson = xmlMapper.readValue(content, PersonDTO.class);
     assertNotNull(foundPerson);
     assertTrue(foundPerson.getId() > 0);
 
@@ -159,32 +159,33 @@ class PersonControllerTest extends AbstractIntegrationTest {
   @Order(6)
   void findAll() throws JsonProcessingException {
     String content = given(specification)
-      .accept(MediaType.APPLICATION_JSON_VALUE)
+      .accept(MediaType.APPLICATION_XML_VALUE)
+      .queryParams("page", 3, "size", 10, "direction", "asc")
       .when().get()
       .then().statusCode(200)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
+      .contentType(MediaType.APPLICATION_XML_VALUE)
       .extract().body().asString();
 
-    List<PersonDTO> people = objectMapper.readValue(content, new TypeReference<>() {
-    });
+    PersonPagedModel wrapper = xmlMapper.readValue(content, PersonPagedModel.class);
+    List<PersonDTO> people = wrapper.getContent();
 
     PersonDTO personOne = people.getFirst();
     assertNotNull(personOne);
-    assertEquals(personOne.getId(), 1);
-    assertEquals(personOne.getFirstName(), "Luana");
-    assertEquals(personOne.getLastName(), "Silva");
-    assertEquals(personOne.getAddress(), "Rua dos Grapes");
+    assertEquals(personOne.getId(), 801);
+    assertEquals(personOne.getFirstName(), "Alisun");
+    assertEquals(personOne.getLastName(), "Allison");
+    assertEquals(personOne.getAddress(), "Room 506");
     assertEquals(personOne.getGender(), "Female");
     assertTrue(personOne.isEnabled());
 
-    PersonDTO personFive = people.get(4);
-    assertNotNull(personFive);
-    assertEquals(personFive.getId(), 5);
-    assertEquals(personFive.getFirstName(), "Emily");
-    assertEquals(personFive.getLastName(), "Cristina");
-    assertEquals(personFive.getAddress(), "Avenida Uva Verde, Uvalandia, 992");
-    assertEquals(personFive.getGender(), "Female");
-    assertTrue(personFive.isEnabled());
+    PersonDTO personSeven = people.get(6);
+    assertNotNull(personSeven);
+    assertEquals(personSeven.getId(), 518);
+    assertEquals(personSeven.getFirstName(), "Alma");
+    assertEquals(personSeven.getLastName(), "Gettins");
+    assertEquals(personSeven.getAddress(), "15th Floor");
+    assertEquals(personSeven.getGender(), "Female");
+    assertFalse(personSeven.isEnabled());
   }
 
   private void mockPerson() {

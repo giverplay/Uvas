@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 // @CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping(path = "/api/v1/book",
-  produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE}
+  produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_YAML_VALUE}
 )
 @Tag(name = "Books API", description = "Endpoints for managing books")
 public class BookController implements BookControllerDocs {
@@ -53,14 +53,14 @@ public class BookController implements BookControllerDocs {
   }
 
   // @CrossOrigin(origins = "http://localhost:8080")
-  @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_YAML_VALUE})
   public ResponseEntity<BookDTO> create(@RequestBody BookDTO dto) {
     BookDTO book = service.create(dto);
     return new ResponseEntity<>(book, HttpStatus.CREATED);
   }
 
   // @CrossOrigin(origins = "http://localhost:8080")
-  @PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
+  @PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_YAML_VALUE})
   public BookDTO update(@RequestBody BookDTO dto) {
     return service.update(dto);
   }

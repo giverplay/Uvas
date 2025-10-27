@@ -12,6 +12,7 @@ public final class PersonHATEOAS {
 
   public static void addLinks(PersonDTO dto) {
     dto.add(linkTo(methodOn(PersonController.class).findById(dto.getId())).withSelfRel().withType("GET"));
+    dto.add(linkTo(methodOn(PersonController.class).findByName(dto.getFirstName(), 0, 10, "asc")).withRel("findByName").withType("GET"));
     dto.add(linkTo(methodOn(PersonController.class).findAll(0, 10, "asc")).withRel("findAll").withType("GET"));
     dto.add(linkTo(methodOn(PersonController.class).create(dto)).withRel("create").withType("CREATE"));
     dto.add(linkTo(methodOn(PersonController.class).update(dto)).withRel("update").withType("PUT"));

@@ -59,8 +59,21 @@ public class PersonService {
     return dto;
   }
 
-  private PersonEntity findById0(Long id) {
-    return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No record found for this id"));
+  public PagedModel<EntityModel<PersonDTO>> findByName(String firstName, Pageable pageable) {
+    LOGGER.info("Finding people by name: " + firstName);
+
+    Page<PersonEntity> entities = repository.findPeopleByName(firstName, pageable);
+    Page<PersonDTO> people = entities.map(entity -> {
+      PersonDTO person = ObjectMapper.parseObject(entity, PersonDTO.class);
+      PersonHATEOAS.addLinks(person);
+      return person;
+    });
+
+    Link peopleLink = linkTo(
+      methodOn(PersonController.class).findByName(firstName, pageable.getPageNumber(), pageable.getPageSize(), String.valueOf(pageable.getSort()))
+    ).withSelfRel();
+
+    return assembler.toModel(people, peopleLink);
   }
 
   public PersonDTO create(PersonDTO person) {
@@ -110,5 +123,9 @@ public class PersonService {
 
     PersonEntity entity = findById0(id);
     repository.delete(entity);
+  }
+
+  private PersonEntity findById0(Long id) {
+    return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No record found for this id"));
   }
 }

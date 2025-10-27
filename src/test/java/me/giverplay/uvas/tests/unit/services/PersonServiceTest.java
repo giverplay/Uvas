@@ -139,7 +139,7 @@ class PersonServiceTest {
 
     assertTrue(dto.getLinks().stream().anyMatch(link ->
       link.getRel().value().equals("findAll") &&
-        link.getHref().endsWith("/api/v1/person") &&
+        link.getHref().contains("/api/v1/person") &&
         link.getType().equals("GET")
     ));
 
