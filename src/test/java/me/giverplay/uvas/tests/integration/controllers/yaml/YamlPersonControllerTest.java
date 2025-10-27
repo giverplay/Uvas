@@ -199,6 +199,43 @@ class YamlPersonControllerTest extends AbstractIntegrationTest {
     assertFalse(personSeven.isEnabled());
   }
 
+  @Test
+  @Order(7)
+  void findByName() {
+    PersonPagedModel wrapper = given()
+      .config(RestAssuredConfig.config()
+        .encoderConfig(EncoderConfig.encoderConfig()
+          .encodeContentTypeAs(MediaType.APPLICATION_YAML_VALUE, ContentType.TEXT)))
+      .spec(specification)
+      .accept(MediaType.APPLICATION_YAML_VALUE)
+      .pathParam("firstName", "mar")
+      .queryParams("page", 0, "size", 10, "direction", "asc")
+      .when().get("findByName/{firstName}")
+      .then().statusCode(200)
+      .contentType(MediaType.APPLICATION_YAML_VALUE)
+      .extract().body().as(PersonPagedModel.class, yamlMapper);
+
+    List<PersonDTO> people = wrapper.getContent();
+
+    PersonDTO personOne = people.getFirst();
+    assertNotNull(personOne);
+    assertEquals(personOne.getId(), 45);
+    assertEquals(personOne.getFirstName(), "Anna-maria");
+    assertEquals(personOne.getLastName(), "Hane");
+    assertEquals(personOne.getAddress(), "PO Box 68616");
+    assertEquals(personOne.getGender(), "Female");
+    assertTrue(personOne.isEnabled());
+
+    PersonDTO personSeven = people.get(6);
+    assertNotNull(personSeven);
+    assertEquals(personSeven.getId(), 679);
+    assertEquals(personSeven.getFirstName(), "Marian");
+    assertEquals(personSeven.getLastName(), "Chaplyn");
+    assertEquals(personSeven.getAddress(), "Apt 1760");
+    assertEquals(personSeven.getGender(), "Female");
+    assertFalse(personSeven.isEnabled());
+  }
+
   private void mockPerson() {
     person.setFirstName("Maria");
     person.setLastName("Kane");
