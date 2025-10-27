@@ -1,6 +1,7 @@
 package me.giverplay.uvas.services;
 
 import jakarta.transaction.Transactional;
+import me.giverplay.uvas.controllers.PersonController;
 import me.giverplay.uvas.data.dto.PersonDTO;
 import me.giverplay.uvas.exception.exceptions.RequiredObjectIsNullException;
 import me.giverplay.uvas.exception.exceptions.ResourceNotFoundException;
@@ -9,10 +10,18 @@ import me.giverplay.uvas.mapper.ObjectMapper;
 import me.giverplay.uvas.model.PersonEntity;
 import me.giverplay.uvas.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class PersonService {
@@ -21,11 +30,25 @@ public class PersonService {
   @Autowired
   private PersonRepository repository;
 
-  public List<PersonDTO> findAll() {
+  @Autowired
+  private PagedResourcesAssembler<PersonDTO> assembler;
+
+  public PagedModel<EntityModel<PersonDTO>> findAll(Pageable pageable) {
     LOGGER.info("Finding all people");
-    List<PersonDTO> people = ObjectMapper.parseObjects(repository.findAll(), PersonDTO.class);
-    people.forEach(PersonHATEOAS::addLinks);
-    return people;
+
+    Page<PersonEntity> entities = repository.findAll(pageable);
+
+    Page<PersonDTO> people = entities.map(entity -> {
+      PersonDTO person = ObjectMapper.parseObject(entity, PersonDTO.class);
+      PersonHATEOAS.addLinks(person);
+      return person;
+    });
+
+    Link peopleLink = linkTo(
+      methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), String.valueOf(pageable.getSort()))
+    ).withSelfRel();
+
+    return assembler.toModel(people, peopleLink);
   }
 
   public PersonDTO findById(Long id) {

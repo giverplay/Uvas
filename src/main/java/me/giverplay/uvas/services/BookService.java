@@ -1,5 +1,6 @@
 package me.giverplay.uvas.services;
 
+import me.giverplay.uvas.controllers.BookController;
 import me.giverplay.uvas.data.dto.BookDTO;
 import me.giverplay.uvas.exception.exceptions.RequiredObjectIsNullException;
 import me.giverplay.uvas.exception.exceptions.ResourceNotFoundException;
@@ -8,10 +9,19 @@ import me.giverplay.uvas.mapper.ObjectMapper;
 import me.giverplay.uvas.model.BookEntity;
 import me.giverplay.uvas.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.logging.Logger;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class BookService {
@@ -20,11 +30,24 @@ public class BookService {
   @Autowired
   private BookRepository repository;
 
-  public List<BookDTO> findAll() {
+  @Autowired
+  private PagedResourcesAssembler<BookDTO> assembler;
+
+  public PagedModel<EntityModel<BookDTO>> findAll(Pageable pageable) {
     LOGGER.info("Finding all books");
-    List<BookDTO> books = ObjectMapper.parseObjects(repository.findAll(), BookDTO.class);
-    books.forEach(BookHATEOAS::addLinks);
-    return books;
+
+    Page<BookEntity> entities = repository.findAll(pageable);
+    Page<BookDTO> books = entities.map(entity -> {
+      BookDTO book = ObjectMapper.parseObject(entity, BookDTO.class);
+      BookHATEOAS.addLinks(book);
+      return book;
+    });
+
+    Link booksLink = linkTo(
+      methodOn(BookController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), String.valueOf(pageable.getSort()))
+    ).withSelfRel();
+
+    return assembler.toModel(books, booksLink);
   }
 
   public BookDTO findById(long id) {

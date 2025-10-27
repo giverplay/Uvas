@@ -6,12 +6,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import me.giverplay.uvas.data.dto.PersonDTO;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface PersonControllerDocs {
 
@@ -35,7 +36,11 @@ public interface PersonControllerDocs {
       @ApiResponse(description = "Not found", responseCode = "404", content = @Content),
       @ApiResponse(description = "Internal server error", responseCode = "500", content = @Content)
     })
-  List<PersonDTO> findAll();
+  ResponseEntity<PagedModel<EntityModel<PersonDTO>>> findAll(
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size,
+    @RequestParam(value = "direction", defaultValue = "asc") String direction
+  );
 
   @Operation(
     summary = "Finds a person",

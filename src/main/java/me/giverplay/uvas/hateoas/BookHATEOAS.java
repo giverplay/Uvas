@@ -12,7 +12,7 @@ public final class BookHATEOAS {
 
   public static void addLinks(BookDTO dto) {
     dto.add(linkTo(methodOn(BookController.class).findById(dto.getId())).withSelfRel().withType("GET"));
-    dto.add(linkTo(methodOn(BookController.class).findAll()).withRel("findAll").withType("GET"));
+    dto.add(linkTo(methodOn(BookController.class).findAll(0, 10, "asc")).withRel("findAll").withType("GET"));
     dto.add(linkTo(methodOn(BookController.class).create(dto)).withRel("create").withType("CREATE"));
     dto.add(linkTo(methodOn(BookController.class).update(dto)).withRel("update").withType("PUT"));
     dto.add(linkTo(methodOn(BookController.class).delete(dto.getId())).withRel("delete").withType("DELETE"));
