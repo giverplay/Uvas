@@ -1,5 +1,7 @@
 package me.giverplay.uvas.exception;
 
+import me.giverplay.uvas.exception.exceptions.FileNotFoundException;
+import me.giverplay.uvas.exception.exceptions.FileStorageException;
 import me.giverplay.uvas.exception.exceptions.RequiredObjectIsNullException;
 import me.giverplay.uvas.exception.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -32,5 +34,17 @@ public class CustomEntityResponseHandler extends ResponseEntityExceptionHandler 
   public final ResponseEntity<ExceptionResponse> handleNullRequiredObjectException(Exception exception, WebRequest request) {
     ExceptionResponse response = new ExceptionResponse(new Date(), exception.getMessage(), request.getDescription(false));
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(FileNotFoundException.class)
+  public final ResponseEntity<ExceptionResponse> handleFileNotFoundException(Exception exception, WebRequest request) {
+    ExceptionResponse response = new ExceptionResponse(new Date(), exception.getMessage(), request.getDescription(false));
+    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(FileStorageException.class)
+  public final ResponseEntity<ExceptionResponse> handleFileStorageException(Exception exception, WebRequest request) {
+    ExceptionResponse response = new ExceptionResponse(new Date(), exception.getMessage(), request.getDescription(false));
+    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
